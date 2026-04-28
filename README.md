@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
+  <h1>🌟 Hệ Thống Học Tiếng Anh Thông Minh (AI-Powered)</h1>
+  <p>
+    <em>Nền tảng học và quản lý từ vựng tiếng Anh hiện đại, ứng dụng Trí tuệ nhân tạo để tối ưu hóa lộ trình và phương pháp học tập.</em>
+  </p>
+</div>
 
-## Getting Started
+---
 
-First, run the development server:
+## 📖 Giới thiệu
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Chào mừng bạn đến với **Hệ Thống Học Tiếng Anh Thông Minh**, một ứng dụng web được thiết kế để thay đổi cách bạn tiếp cận và ghi nhớ từ vựng. Thay vì học vẹt theo các danh sách từ khô khan, hệ thống tận dụng sức mạnh của AI để mang lại những ví dụ ngữ cảnh sinh động, các bài tập phân tích họ từ (word family) sâu sắc và lộ trình ôn tập cá nhân hóa.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ✨ Các chức năng chính & Hướng dẫn sử dụng
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 1. 📚 Quản lý Từ vựng (Vocabulary Management)
+- **Tính năng:** Nơi lưu trữ, theo dõi và phân loại toàn bộ từ vựng bạn đang học. 
+- **Cách dùng:** Truy cập trang **Vocabulary** để xem danh sách. Bạn có thể sử dụng trang **Add** để bổ sung các từ mới cùng với nghĩa, loại từ và phiên âm.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 2. 🧠 Luyện tập & Ôn tập (Learn & Practice)
+- **Tính năng:** Các bài tập tương tác giúp bạn củng cố trí nhớ. Hệ thống hỗ trợ đa dạng bài tập nhằm kiểm tra khả năng nhớ từ và hiểu ngữ cảnh.
+- **Cách dùng:** Truy cập mục **Learn** để bắt đầu các phiên ôn tập hàng ngày. Hệ thống sẽ tự động điều phối các từ vựng cần học dựa trên tiến độ của bạn.
 
-## Learn More
+### 3. 🤖 Tích hợp Trí tuệ Nhân tạo (AI Generate & Complete)
+- **Tính năng:** Đây là "trái tim" của hệ thống. AI giúp bạn tự động sinh ra các câu ví dụ sát với thực tế, tự động hoàn thiện thông tin từ vựng hoặc giải thích các từ đồng nghĩa/trái nghĩa.
+- **Cách dùng:** Khi xem hoặc thêm từ vựng, bạn có thể sử dụng công cụ AI để **Generate** (tự động tạo ví dụ) hoặc tính năng **Word Family** để AI liệt kê và giải thích các từ cùng họ (danh từ, động từ, tính từ, trạng từ liên quan).
 
-To learn more about Next.js, take a look at the following resources:
+### 4. ⚙️ Cấu hình Hệ thống (Settings & Configuration)
+- **Tính năng:** Hệ thống cho phép bạn hoàn toàn làm chủ cấu hình AI. Bạn không bị giới hạn ở một nhà cung cấp cụ thể mà có thể tùy ý thay đổi.
+- **Cách dùng:** Chuyển đến mục **Settings**. Tại đây, bạn có thể nhập API Keys, chọn nhà cung cấp AI (OpenAI, Gemini, Claude,...) và thiết lập các thông số Model phù hợp với nhu cầu và chi phí cá nhân.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🚀 Hướng dẫn Cài đặt (Dành cho Developer)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Dự án được xây dựng trên nền tảng **Next.js (App Router)** và **TypeScript**. Để chạy dự án tại local:
 
-## Deploy on Vercel
+1. **Clone mã nguồn:**
+   ```bash
+   git clone <url-repository-cua-ban>
+   cd hoctienganh
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. **Cài đặt các gói phụ thuộc:**
+   ```bash
+   npm install
+   # hoặc yarn / pnpm install
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. **Thiết lập biến môi trường:**
+   Tạo một file `.env` ở thư mục gốc (hoặc thiết lập trực tiếp tại màn hình **Settings** trên UI) để cung cấp các API Key cần thiết.
+
+4. **Khởi động Server:**
+   ```bash
+   npm run dev
+   ```
+   Truy cập `http://localhost:3000` trên trình duyệt để bắt đầu sử dụng.
+
+---
+
+## 🤝 Góp ý & Báo lỗi
+
+Dự án vẫn đang trong quá trình phát triển và hoàn thiện. Mình rất mong nhận được những đánh giá, góp ý cũng như các báo cáo lỗi từ người dùng để sản phẩm ngày càng tốt hơn.
+
+📩 **Liên hệ và gửi góp ý trực tiếp tại Facebook:**  
+👉 [Nguyễn Đoàn Hải Đông (IamNguyenDoanHaiDong)](https://www.facebook.com/IamNguyenDoanHaiDong/)
+
+---
+
+## 💖 Donate / Ủng hộ Tác giả
+
+Nếu dự án mang lại giá trị cho bạn, giúp bạn học tiếng Anh hiệu quả hơn hoặc có ích cho công việc tham khảo mã nguồn của bạn, hãy cân nhắc ủng hộ tác giả một ly cà phê nhé! Sự ủng hộ của các bạn là động lực rất lớn để mình tiếp tục duy trì và phát triển thêm nhiều tính năng mới.
+
+**Quét mã QR dưới đây để ủng hộ:**
+
+<div align="center">
+  <img src="./qr.jpg" alt="Mã QR Donate" width="300" style="border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15);">
+  <p><em>Chân thành cảm ơn bạn đã đồng hành và ủng hộ!</em> ❤️</p>
+</div>
