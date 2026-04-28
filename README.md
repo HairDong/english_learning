@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>🌟 Hệ Thống Học Tiếng Anh Thông Minh (AI-Powered)</h1>
+  <h1>🌟 Hệ Thống Học Tiếng Anh Bằng AI</h1>
   <p>
     <em>Nền tảng học và quản lý từ vựng tiếng Anh hiện đại, ứng dụng Trí tuệ nhân tạo để tối ưu hóa lộ trình và phương pháp học tập.</em>
   </p>
@@ -9,7 +9,7 @@
 
 ## 📖 Giới thiệu
 
-Chào mừng bạn đến với **Hệ Thống Học Tiếng Anh Thông Minh**, một ứng dụng web được thiết kế để thay đổi cách bạn tiếp cận và ghi nhớ từ vựng. Thay vì học vẹt theo các danh sách từ khô khan, hệ thống tận dụng sức mạnh của AI để mang lại những ví dụ ngữ cảnh sinh động, các bài tập phân tích họ từ (word family) sâu sắc và lộ trình ôn tập cá nhân hóa.
+Chào mừng bạn đến với **Hệ Thống Học Tiếng Anh Bằng AI**, một ứng dụng web được thiết kế để thay đổi cách bạn tiếp cận và ghi nhớ từ vựng. Thay vì học vẹt theo các danh sách từ khô khan, hệ thống tận dụng sức mạnh của AI để mang lại những ví dụ ngữ cảnh sinh động, các bài tập phân tích họ từ (word family) sâu sắc và lộ trình ôn tập cá nhân hóa.
 
 ## ✨ Các chức năng chính & Hướng dẫn sử dụng
 
@@ -18,11 +18,11 @@ Chào mừng bạn đến với **Hệ Thống Học Tiếng Anh Thông Minh**, 
 - **Cách dùng:** Truy cập trang **Vocabulary** để xem danh sách. Bạn có thể sử dụng trang **Add** để bổ sung các từ mới cùng với nghĩa, loại từ và phiên âm.
 
 ### 2. 🧠 Luyện tập & Ôn tập (Learn & Practice)
-- **Tính năng:** Các bài tập tương tác giúp bạn củng cố trí nhớ. Hệ thống hỗ trợ đa dạng bài tập nhằm kiểm tra khả năng nhớ từ và hiểu ngữ cảnh.
+- **Tính năng:** Các bài tập tương tác giúp bạn củng cố trí nhớ bằng **FlashCard**. Hệ thống hỗ trợ đa dạng bài tập nhằm kiểm tra khả năng nhớ từ và hiểu ngữ cảnh.
 - **Cách dùng:** Truy cập mục **Learn** để bắt đầu các phiên ôn tập hàng ngày. Hệ thống sẽ tự động điều phối các từ vựng cần học dựa trên tiến độ của bạn.
 
 ### 3. 🤖 Tích hợp Trí tuệ Nhân tạo (AI Generate & Complete)
-- **Tính năng:** Đây là "trái tim" của hệ thống. AI giúp bạn tự động sinh ra các câu ví dụ sát với thực tế, tự động hoàn thiện thông tin từ vựng hoặc giải thích các từ đồng nghĩa/trái nghĩa.
+- **Tính năng:** AI giúp bạn tự động sinh ra các câu ví dụ sát với thực tế, tự động hoàn thiện thông tin từ vựng hoặc giải thích các từ đồng nghĩa/trái nghĩa.
 - **Cách dùng:** Khi xem hoặc thêm từ vựng, bạn có thể sử dụng công cụ AI để **Generate** (tự động tạo ví dụ) hoặc tính năng **Word Family** để AI liệt kê và giải thích các từ cùng họ (danh từ, động từ, tính từ, trạng từ liên quan).
 
 ### 4. ⚙️ Cấu hình Hệ thống (Settings & Configuration)
@@ -35,7 +35,7 @@ Dự án được xây dựng trên nền tảng **Next.js (App Router)** và **
 
 1. **Clone mã nguồn:**
    ```bash
-   git clone <url-repository-cua-ban>
+   git clone https://github.com/HairDong/english_learning
    cd hoctienganh
    ```
 
@@ -61,7 +61,7 @@ Dự án được xây dựng trên nền tảng **Next.js (App Router)** và **
 Dự án vẫn đang trong quá trình phát triển và hoàn thiện. Mình rất mong nhận được những đánh giá, góp ý cũng như các báo cáo lỗi từ người dùng để sản phẩm ngày càng tốt hơn.
 
 📩 **Liên hệ và gửi góp ý trực tiếp tại Facebook:**  
-👉 [Nguyễn Đoàn Hải Đông (IamNguyenDoanHaiDong)](https://www.facebook.com/IamNguyenDoanHaiDong/)
+👉 [Hải Đông](https://www.facebook.com/IamNguyenDoanHaiDong/)
 
 ---
 
