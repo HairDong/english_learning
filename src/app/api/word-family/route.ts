@@ -7,6 +7,8 @@ const wordFamilyRequestSchema = z.object({
   apiKey: z.string().optional(),
   baseURL: z.string().optional(),
   model: z.string().optional(),
+  googleApiKey: z.string().optional(),
+  googleModel: z.string().optional(),
 });
 
 export async function POST(request: Request) {
@@ -19,14 +21,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid input", details: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { rootWord, apiKey, baseURL, model } = parsed.data;
-  const ai = resolveAIClient({ apiKey, baseURL });
+  const { rootWord, apiKey, baseURL, model, googleApiKey, googleModel } = parsed.data;
+  const ai = resolveAIClient({ apiKey, baseURL, model, googleApiKey, googleModel });
 
   if (!ai) {
-    return NextResponse.json({ error: "No API key configured. Add your OpenAI key in Settings." }, { status: 500 });
+    return NextResponse.json(
+      { error: "No API key configured. Please add an OpenAI key, Google API key, or configure a Custom Route in Settings." },
+      { status: 500 }
+    );
   }
 
-  const useModel = model || ai.defaultModel;
+  const useModel = ai.defaultModel;
 
   const prompt = `Given the root word "${rootWord}", generate its word family. Include all common derivations across different parts of speech.
 For each family member provide:
@@ -36,50 +41,22 @@ For each family member provide:
 - "collocations": 1-2 example collocations (array, can be empty)
 - "example": one natural English example sentence
 Also include a "rootMeaning" string (Vietnamese meaning of the root).
-Return ONLY JSON.`;
+Return ONLY valid JSON.`;
 
   try {
-    const response = await ai.client.responses.create({
+    const completion = await ai.client.chat.completions.create({
       model: useModel,
-      input: [
+      messages: [
         { role: "system", content: "You are a helpful English teacher. Output must be valid JSON only." },
         { role: "user", content: prompt },
       ],
-      text: {
-        format: {
-          type: "json_schema",
-          strict: true,
-          name: "word_family",
-          schema: {
-            type: "object",
-            additionalProperties: false,
-            required: ["rootMeaning", "family"],
-            properties: {
-              rootMeaning: { type: "string" },
-              family: {
-                type: "array",
-                items: {
-                  type: "object",
-                  additionalProperties: false,
-                  required: ["word", "partOfSpeech", "meaning", "collocations", "example"],
-                  properties: {
-                    word: { type: "string" },
-                    partOfSpeech: { type: "string" },
-                    meaning: { type: "string" },
-                    collocations: { type: "array", items: { type: "string" } },
-                    example: { type: "string" },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+      response_format: { type: "json_object" },
       temperature: 0.3,
     });
 
+    const outputText = completion.choices[0]?.message?.content ?? "{}";
     let json: unknown = null;
-    try { json = JSON.parse(response.output_text ?? "{}"); }
+    try { json = JSON.parse(outputText); }
     catch { return NextResponse.json({ error: "AI returned invalid JSON" }, { status: 502 }); }
 
     return NextResponse.json(json);

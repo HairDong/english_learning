@@ -12,14 +12,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid input", details: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { topic, count, level, apiKey, baseURL, model, existingWords } = parsed.data;
-  const ai = resolveAIClient({ apiKey, baseURL, model });
+  const { topic, count, level, apiKey, baseURL, model, googleApiKey, googleModel, existingWords } = parsed.data;
+  const ai = resolveAIClient({ apiKey, baseURL, model, googleApiKey, googleModel });
 
   if (!ai) {
-    return NextResponse.json({ error: "No API key configured. Add your OpenAI key in Settings." }, { status: 500 });
+    return NextResponse.json(
+      { error: "No API key configured. Please add an OpenAI key, Google API key, or configure a Custom Route in Settings." },
+      { status: 500 }
+    );
   }
-
-  const useModel = ai.defaultModel;
 
   const excludeText = existingWords && existingWords.length > 0
     ? `\nIMPORTANT: Do NOT generate any of the following words, as the user already has them: ${existingWords.join(", ")}`
@@ -33,50 +34,22 @@ For each word include:
 - partOfSpeech: one of noun|verb|adjective|adverb|preposition|conjunction|pronoun|phrase|other
 - collocations: 1-3 common collocations/patterns (e.g. "decide + to do sth", "depend on sb/sth"). Empty array if none.
 - examples: 2-3 natural sentences at ${level} level
-Return ONLY JSON as an object with key "items" containing an array.`;
+Return ONLY valid JSON as an object with key "items" containing an array.`;
 
   try {
-    const response = await ai.client.responses.create({
-      model: useModel,
-      input: [
+    const completion = await ai.client.chat.completions.create({
+      model: ai.defaultModel,
+      messages: [
         { role: "system", content: "You are a helpful assistant. Output must be valid JSON only." },
         { role: "user", content: prompt },
       ],
-      text: {
-        format: {
-          type: "json_schema",
-          strict: true,
-          name: "vocabulary_list",
-          schema: {
-            type: "object",
-            additionalProperties: false,
-            required: ["items"],
-            properties: {
-              items: {
-                type: "array",
-                items: {
-                  type: "object",
-                  additionalProperties: false,
-                  required: ["word", "phonetic", "meaning", "partOfSpeech", "collocations", "examples"],
-                  properties: {
-                    word: { type: "string" },
-                    phonetic: { type: "string" },
-                    meaning: { type: "string" },
-                    partOfSpeech: { type: "string" },
-                    collocations: { type: "array", items: { type: "string" } },
-                    examples: { type: "array", items: { type: "string" }, minItems: 2 },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+      response_format: { type: "json_object" },
       temperature: 0.4,
     });
 
+    const outputText = completion.choices[0]?.message?.content ?? "{}";
     let json: unknown = null;
-    try { json = JSON.parse(response.output_text ?? "{}"); }
+    try { json = JSON.parse(outputText); }
     catch { return NextResponse.json({ error: "AI returned invalid JSON" }, { status: 502 }); }
 
     const raw = typeof json === "object" && json && "items" in (json as object)
@@ -84,7 +57,7 @@ Return ONLY JSON as an object with key "items" containing an array.`;
 
     const validated = vocabularyListSchema.safeParse(raw);
     if (!validated.success) {
-      return NextResponse.json({ error: "AI response validation failed" }, { status: 502 });
+      return NextResponse.json({ error: "AI response validation failed", details: validated.error.flatten() }, { status: 502 });
     }
     return NextResponse.json(validated.data);
   } catch (error) {

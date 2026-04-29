@@ -26,6 +26,8 @@ export const generateRequestSchema = z.object({
   apiKey: z.string().optional(),
   baseURL: z.string().optional(),
   model: z.string().optional(),
+  googleApiKey: z.string().optional(),
+  googleModel: z.string().optional(),
   existingWords: z.array(z.string()).optional(),
 });
 
@@ -38,6 +40,8 @@ export const exampleRequestSchema = z.object({
   apiKey: z.string().optional(),
   baseURL: z.string().optional(),
   model: z.string().optional(),
+  googleApiKey: z.string().optional(),
+  googleModel: z.string().optional(),
 });
 
 export const exampleResponseSchema = z.object({
@@ -54,6 +58,8 @@ export const practiceRequestSchema = z.object({
   apiKey: z.string().optional(),
   baseURL: z.string().optional(),
   model: z.string().optional(),
+  googleApiKey: z.string().optional(),
+  googleModel: z.string().optional(),
 });
 
 export const practiceResponseSchema = z.object({
@@ -66,8 +72,11 @@ export const topicGenerateRequestSchema = z.object({
   apiKey: z.string().optional(),
   baseURL: z.string().optional(),
   model: z.string().optional(),
+  googleApiKey: z.string().optional(),
+  googleModel: z.string().optional(),
 });
 
 export const topicGenerateResponseSchema = z.object({
   topics: z.array(z.string().min(1)).min(1),
 });
+

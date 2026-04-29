@@ -23,7 +23,7 @@ export type SettingsState = {
   /** Return the active API key (legacy) */
   getActiveApiKey: () => string;
   /** Return the full active AI config */
-  getActiveConfig: () => { apiKey?: string; baseURL?: string; model?: string };
+  getActiveConfig: () => { apiKey?: string; baseURL?: string; model?: string; googleApiKey?: string; googleModel?: string };
 };
 
 export const useSettingsStore = create<SettingsState>()(
@@ -49,7 +49,8 @@ export const useSettingsStore = create<SettingsState>()(
       },
       
       getActiveConfig: () => {
-        const { customRoute, openaiApiKey, openaiModel } = get();
+        const { customRoute, openaiApiKey, openaiModel, googleApiKey, googleModel } = get();
+        // Priority 1: Custom route
         if (customRoute.url && customRoute.apiKey) {
           return {
             apiKey: customRoute.apiKey,
@@ -57,10 +58,21 @@ export const useSettingsStore = create<SettingsState>()(
             model: customRoute.model || undefined,
           };
         }
-        return {
-          apiKey: openaiApiKey || undefined,
-          model: openaiModel || undefined,
-        };
+        // Priority 2: OpenAI key
+        if (openaiApiKey) {
+          return {
+            apiKey: openaiApiKey,
+            model: openaiModel || undefined,
+          };
+        }
+        // Priority 3: Google Gemini key
+        if (googleApiKey) {
+          return {
+            googleApiKey,
+            googleModel: googleModel || undefined,
+          };
+        }
+        return {};
       },
     }),
     {

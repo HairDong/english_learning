@@ -12,11 +12,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid input", details: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { word, meaning, topic, level, apiKey, baseURL, model } = parsed.data;
-  const ai = resolveAIClient({ apiKey, baseURL, model });
+  const { word, meaning, topic, level, apiKey, baseURL, model, googleApiKey, googleModel } = parsed.data;
+  const ai = resolveAIClient({ apiKey, baseURL, model, googleApiKey, googleModel });
 
   if (!ai) {
-    return NextResponse.json({ error: "No API key configured. Add your OpenAI key in Settings." }, { status: 500 });
+    return NextResponse.json(
+      { error: "No API key configured. Please add an OpenAI key, Google API key, or configure a Custom Route in Settings." },
+      { status: 500 }
+    );
   }
 
   const useModel = ai.defaultModel;
@@ -25,33 +28,19 @@ export async function POST(request: Request) {
   const prompt = `Create one short Vietnamese sentence about the word "${word}" (meaning: ${meaning}). ${topicText} Then provide the correct English sentence using the word "${word}". The English sentence must match CEFR level ${level} and be natural. Return ONLY JSON with {"english":"...","vietnamese":"..."}.`;
 
   try {
-    const response = await ai.client.responses.create({
+    const completion = await ai.client.chat.completions.create({
       model: useModel,
-      input: [
+      messages: [
         { role: "system", content: "You are a helpful assistant. Output must be valid JSON only." },
         { role: "user", content: prompt },
       ],
-      text: {
-        format: {
-          type: "json_schema",
-          strict: true,
-          name: "practice",
-          schema: {
-            type: "object",
-            additionalProperties: false,
-            required: ["english", "vietnamese"],
-            properties: {
-              english: { type: "string" },
-              vietnamese: { type: "string" },
-            },
-          },
-        },
-      },
+      response_format: { type: "json_object" },
       temperature: 0.5,
     });
 
+    const outputText = completion.choices[0]?.message?.content ?? "{}";
     let json: unknown = null;
-    try { json = JSON.parse(response.output_text ?? "{}"); }
+    try { json = JSON.parse(outputText); }
     catch { return NextResponse.json({ error: "AI returned invalid JSON" }, { status: 502 }); }
 
     const validated = practiceResponseSchema.safeParse(json);

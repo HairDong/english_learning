@@ -12,38 +12,33 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid input", details: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { count, apiKey, baseURL, model } = parsed.data;
-  const ai = resolveAIClient({ apiKey, baseURL });
+  const { count, apiKey, baseURL, model, googleApiKey, googleModel } = parsed.data;
+  const ai = resolveAIClient({ apiKey, baseURL, model, googleApiKey, googleModel });
 
   if (!ai) {
-    return NextResponse.json({ error: "No API key configured. Add your OpenAI key in Settings." }, { status: 500 });
+    return NextResponse.json(
+      { error: "No API key configured. Please add an OpenAI key, Google API key, or configure a Custom Route in Settings." },
+      { status: 500 }
+    );
   }
 
-  const useModel = model || ai.defaultModel;
   const num = count ?? 8;
   const prompt = `Generate ${num} English-learning topics for everyday life. Short topics (1-3 words). No duplicates. Return ONLY JSON with {"topics": ["..."]}.`;
 
   try {
-    const response = await ai.client.responses.create({
-      model: useModel,
-      input: [
+    const completion = await ai.client.chat.completions.create({
+      model: ai.defaultModel,
+      messages: [
         { role: "system", content: "You are a helpful assistant. Output must be valid JSON only." },
         { role: "user", content: prompt },
       ],
-      text: {
-        format: {
-          type: "json_schema", strict: true, name: "topics",
-          schema: {
-            type: "object", additionalProperties: false, required: ["topics"],
-            properties: { topics: { type: "array", items: { type: "string" }, minItems: 3, maxItems: 20 } },
-          },
-        },
-      },
+      response_format: { type: "json_object" },
       temperature: 0.6,
     });
 
+    const outputText = completion.choices[0]?.message?.content ?? "{}";
     let json: unknown = null;
-    try { json = JSON.parse(response.output_text ?? "{}"); }
+    try { json = JSON.parse(outputText); }
     catch { return NextResponse.json({ error: "AI returned invalid JSON" }, { status: 502 }); }
 
     const validated = topicGenerateResponseSchema.safeParse(json);

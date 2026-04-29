@@ -12,6 +12,8 @@ const completeRequestSchema = z.object({
   apiKey: z.string().optional(),
   baseURL: z.string().optional(),
   model: z.string().optional(),
+  googleApiKey: z.string().optional(),
+  googleModel: z.string().optional(),
 });
 
 export async function POST(request: Request) {
@@ -24,14 +26,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid input", details: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { word, phonetic, meaning, vietnamese, example, level, apiKey, baseURL, model } = parsed.data;
-  const ai = resolveAIClient({ apiKey, baseURL });
+  const { word, phonetic, meaning, vietnamese, example, level, apiKey, baseURL, model, googleApiKey, googleModel } = parsed.data;
+  const ai = resolveAIClient({ apiKey, baseURL, model, googleApiKey, googleModel });
 
   if (!ai) {
-    return NextResponse.json({ error: "No API key configured. Add your OpenAI key in Settings." }, { status: 500 });
+    return NextResponse.json(
+      { error: "No API key configured. Please add an OpenAI key, Google API key, or configure a Custom Route in Settings." },
+      { status: 500 }
+    );
   }
 
-  const useModel = model || ai.defaultModel;
+  const useModel = ai.defaultModel;
 
   const hints: string[] = [];
   if (word) hints.push(`English word: "${word}"`);
@@ -53,37 +58,19 @@ Complete ALL fields for a vocabulary entry at CEFR level ${level}.
 Return ONLY valid JSON.`;
 
   try {
-    const response = await ai.client.responses.create({
+    const completion = await ai.client.chat.completions.create({
       model: useModel,
-      input: [
+      messages: [
         { role: "system", content: "You are a helpful assistant. Output must be valid JSON only." },
         { role: "user", content: prompt },
       ],
-      text: {
-        format: {
-          type: "json_schema",
-          strict: true,
-          name: "complete_vocab",
-          schema: {
-            type: "object",
-            additionalProperties: false,
-            required: ["word", "phonetic", "meaning", "partOfSpeech", "collocations", "examples"],
-            properties: {
-              word: { type: "string" },
-              phonetic: { type: "string" },
-              meaning: { type: "string" },
-              partOfSpeech: { type: "string" },
-              collocations: { type: "array", items: { type: "string" } },
-              examples: { type: "array", items: { type: "string" }, minItems: 2 },
-            },
-          },
-        },
-      },
+      response_format: { type: "json_object" },
       temperature: 0.3,
     });
 
+    const outputText = completion.choices[0]?.message?.content ?? "{}";
     let json: unknown = null;
-    try { json = JSON.parse(response.output_text ?? "{}"); }
+    try { json = JSON.parse(outputText); }
     catch { return NextResponse.json({ error: "AI returned invalid JSON" }, { status: 502 }); }
 
     const resultSchema = z.object({

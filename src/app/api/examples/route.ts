@@ -6,9 +6,7 @@ import {
 } from "@/lib/vocabulary-schema";
 
 export async function POST(request: Request) {
-
   let body: unknown = null;
-
   try {
     body = await request.json();
   } catch {
@@ -16,7 +14,6 @@ export async function POST(request: Request) {
   }
 
   const parsed = exampleRequestSchema.safeParse(body);
-
   if (!parsed.success) {
     return NextResponse.json(
       { error: "Invalid input", details: parsed.error.flatten() },
@@ -24,57 +21,36 @@ export async function POST(request: Request) {
     );
   }
 
-  const { word, meaning, topic, level, count, apiKey, baseURL, model } = parsed.data;
+  const { word, meaning, topic, level, count, apiKey, baseURL, model, googleApiKey, googleModel } = parsed.data;
   const finalCount = count ?? 2;
 
-  const ai = resolveAIClient({ apiKey, baseURL, model });
+  const ai = resolveAIClient({ apiKey, baseURL, model, googleApiKey, googleModel });
   if (!ai) {
     return NextResponse.json(
-      { error: "No API key configured. Add your API key in Settings." },
+      { error: "No API key configured. Please add an OpenAI key, Google API key, or configure a Custom Route in Settings." },
       { status: 500 }
     );
   }
 
   const topicText = topic ? `Topic: ${topic}.` : "";
-  const prompt = `Create ${finalCount} short, natural English example sentences using the word "${word}" (meaning: ${meaning}). ${topicText} The sentences must match CEFR level ${level} and clearly demonstrate usage. Return ONLY JSON with {"examples": ["..."]}.`;
+  const prompt = `Create ${finalCount} short, natural English example sentences using the word "${word}" (meaning: ${meaning}). ${topicText} The sentences must match CEFR level ${level} and clearly demonstrate usage. Return ONLY JSON with {"examples": ["..."]}. `;
 
   try {
-    const response = await ai.client.responses.create({
+    const completion = await ai.client.chat.completions.create({
       model: ai.defaultModel,
-      input: [
+      messages: [
         {
           role: "system",
           content: "You are a helpful assistant. Output must be valid JSON only.",
         },
         { role: "user", content: prompt },
       ],
-      text: {
-        format: {
-          type: "json_schema",
-          strict: true,
-          name: "examples",
-          schema: {
-            type: "object",
-            additionalProperties: false,
-            required: ["examples"],
-            properties: {
-              examples: {
-                type: "array",
-                items: { type: "string" },
-                minItems: 2,
-                maxItems: 5,
-              },
-            },
-          },
-        },
-      },
+      response_format: { type: "json_object" },
       temperature: 0.5,
     });
 
-    const outputText = response.output_text ?? "{}";
-
+    const outputText = completion.choices[0]?.message?.content ?? "{}";
     let json: unknown = null;
-
     try {
       json = JSON.parse(outputText);
     } catch {
@@ -85,7 +61,6 @@ export async function POST(request: Request) {
     }
 
     const validated = exampleResponseSchema.safeParse(json);
-
     if (!validated.success) {
       return NextResponse.json(
         { error: "AI response validation failed" },
@@ -95,7 +70,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(validated.data);
   } catch (error) {
-    console.error("OpenAI examples error", error);
+    console.error("AI examples error", error);
     if ((error as any)?.status) {
       return NextResponse.json(
         {
