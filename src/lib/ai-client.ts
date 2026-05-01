@@ -59,7 +59,7 @@ export function resolveAIClient(opts: AIClientOptions): ResolvedAI | null {
     });
     return {
       client,
-      defaultModel: opts.googleModel || opts.model || "gemini-1.5-flash",
+      defaultModel: opts.googleModel || opts.model || "gemini-2.5-flash",
       apiKey: googleKey,
     };
   }

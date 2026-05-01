@@ -165,7 +165,7 @@ export default function SettingsPage() {
               <Label htmlFor="google-model" className="text-sm font-medium">Model</Label>
               <Input
                 id="google-model"
-                placeholder="gemini-1.5-flash"
+                placeholder="gemini-2.5-flash"
                 value={googleModel}
                 onChange={(e) => setGoogleModel(e.target.value)}
               />

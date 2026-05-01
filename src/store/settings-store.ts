@@ -32,7 +32,7 @@ export const useSettingsStore = create<SettingsState>()(
       openaiApiKey: "",
       openaiModel: "gpt-4o-mini",
       googleApiKey: "",
-      googleModel: "gemini-1.5-flash",
+      googleModel: "gemini-2.5-flash",
       customRoute: { url: "", apiKey: "", model: "" },
 
       setOpenaiApiKey: (key) => set({ openaiApiKey: key }),

@@ -50,6 +50,10 @@ export async function POST(request: Request) {
     return NextResponse.json(validated.data);
   } catch (error) {
     console.error("AI practice error", error);
-    return NextResponse.json({ error: "Failed to generate practice" }, { status: 500 });
+    const message =
+      error && typeof error === "object" && "status" in error && error.status === 404
+        ? "Google AI model not found. Check the Gemini model name in Settings, for example gemini-2.5-flash."
+        : "Failed to generate practice";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
